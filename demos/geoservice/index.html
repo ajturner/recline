@@ -13,7 +13,17 @@ root: ../../
 .recline-timeline .vmm-timeline {
   height: 550px;
 }
+.service-url input { width: 600px; }
 </style>
+
+<form action="" method="GET" class="form-inline" id="service-url-form">
+  <div class="input-prepend service-url">
+    <input type="text" name="url" value="" class="span2" placeholder="Feature Service URL ...">
+  </div>       
+  <button type="submit" class="btn">Load »</button>     
+</form>
+
+<div class="service-url-here"></div>
 
 <div class="data-explorer-here"></div>
 
@@ -22,37 +32,31 @@ root: ../../
 <script type="text/javascript" src="../../src/backend.geoservice.js"></script>
 
 <script type="text/javascript" charset="utf-8">
-jQuery(function($) {
-  var dataset = new recline.Model.Dataset({
-    url: 'http://fema-services2.esri.com/arcgis/rest/services/2012_Sandy/GasStationStatus/FeatureServer',
-    backend: 'geoservice'
-  });
 
-  // Now do the query to the backend to load data
-  dataset.fetch().done(function(dataset) {
-    if (console) {
-      console.log(dataset.records);
-    }
-  });
-  
-  
+jQuery(function($) {
+  var defaultUrl = 'http://fema-services2.esri.com/arcgis/rest/services/2012_Sandy/GasStationStatus/FeatureServer';
+
   // Create an Explorer
   window.dataExplorer = null;
   window.explorerDiv = $('.data-explorer-here');
-
-  createExplorer(dataset, null);
-
-
-  // Optional - display the results in a grid
-  // Note how we can set this up before any data has arrived
-  // Views will listen for query completion and update themselves automatically
-  // var grid = new recline.View.Grid({
-  //   model: dataset
-  // });
-  // $('#data-explorer').append(grid.el);
-
-
+  
+  $('#service-url-form').submit(function() {
+    var url = $('.service-url input').val()
+    loadService(url);
+    return false;
+  });    
+  $('.service-url input').val(defaultUrl);
+  loadService(defaultUrl);
 });
+
+var loadService = function(url) {
+  var dataset = new recline.Model.Dataset({
+    url: url,
+    backend: 'geoservice'
+  });
+  createExplorer(dataset, null);
+  
+}
 // make Explorer creation / initialization in a function so we can call it
 // again and again
 var createExplorer = function(dataset, state) {
@@ -104,4 +108,5 @@ var createExplorer = function(dataset, state) {
     views: views
   });
 }
+
 </script>

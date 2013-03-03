@@ -91,7 +91,9 @@ this.recline.Backend.GeoService = this.recline.Backend.GeoService || {};
     for(key in featureService.fields) {
       results.fields.push(featureService.fields[key].name);
     }
+    results.fields.push("geometry");
     results.records = _.map(entries, function(entry) {
+      entry.attributes['geometry'] = {type: "Point", coordinates: [entry.geometry.x, entry.geometry.y]};
       return entry.attributes;
     });
     
@@ -103,7 +105,7 @@ this.recline.Backend.GeoService = this.recline.Backend.GeoService || {};
   my.getGeoserviceAPIUrls = function(url) {
     // http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/596_Acres_Lots/FeatureServer/0?f=pjson
     var urls = {
-      query: url + "/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&f=pjson&token=",
+      query: url + "/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&f=pjson&token=",
       service: url + "/0?f=json"
     };    
 
