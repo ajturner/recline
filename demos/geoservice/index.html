@@ -1,0 +1,107 @@
+---
+layout: container
+title: Demos - GeoServices
+recline-deps: true
+root: ../../
+---
+
+<style type="text/css">
+.recline-slickgrid {
+  height: 550px;
+}
+
+.recline-timeline .vmm-timeline {
+  height: 550px;
+}
+</style>
+
+<div class="data-explorer-here"></div>
+
+<div style="clear: both;"></div>
+
+<script type="text/javascript" src="../../src/backend.geoservice.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+jQuery(function($) {
+  var dataset = new recline.Model.Dataset({
+    url: 'http://fema-services2.esri.com/arcgis/rest/services/2012_Sandy/GasStationStatus/FeatureServer',
+    backend: 'geoservice'
+  });
+
+  // Now do the query to the backend to load data
+  dataset.fetch().done(function(dataset) {
+    if (console) {
+      console.log(dataset.records);
+    }
+  });
+  
+  
+  // Create an Explorer
+  window.dataExplorer = null;
+  window.explorerDiv = $('.data-explorer-here');
+
+  createExplorer(dataset, null);
+
+
+  // Optional - display the results in a grid
+  // Note how we can set this up before any data has arrived
+  // Views will listen for query completion and update themselves automatically
+  // var grid = new recline.View.Grid({
+  //   model: dataset
+  // });
+  // $('#data-explorer').append(grid.el);
+
+
+});
+// make Explorer creation / initialization in a function so we can call it
+// again and again
+var createExplorer = function(dataset, state) {
+  // remove existing data explorer view
+  var reload = false;
+  if (window.dataExplorer) {
+    window.dataExplorer.remove();
+    reload = true;
+  }
+  window.dataExplorer = null;
+  var $el = $('<div />');
+  $el.appendTo(window.explorerDiv);
+
+  var views = [
+    {
+      id: 'grid',
+      label: 'Grid',
+      view: new recline.View.SlickGrid({
+        model: dataset
+      })
+    },
+    {
+      id: 'graph',
+      label: 'Graph',
+      view: new recline.View.Graph({
+        model: dataset
+      })
+    },
+    {
+      id: 'map',
+      label: 'Map',
+      view: new recline.View.Map({
+        model: dataset
+      })
+    },
+    {
+      id: 'transform',
+      label: 'Transform',
+      view: new recline.View.Transform({
+        model: dataset
+      })
+    }
+  ];
+
+  window.dataExplorer = new recline.View.MultiView({
+    model: dataset,
+    el: $el,
+    state: state,
+    views: views
+  });
+}
+</script>
